@@ -7,11 +7,11 @@ use AppBundle\Exception\CommitteeAlreadyApprovedException;
 use AppBundle\Report\ReportType;
 use AppBundle\ValueObject\Link;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use libphonenumber\PhoneNumber;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use Sabre\DAV\Collection;
 
 /**
  * This entity represents a committee group.
@@ -110,6 +110,11 @@ class Committee extends BaseGroup implements SynchronizedEntity
      */
     public $hosts = [];
 
+    /**
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ReferentTag")
+     */
+    private $referentTags;
+
     public function __construct(
         UuidInterface $uuid,
         UuidInterface $creator,
@@ -122,7 +127,8 @@ class Committee extends BaseGroup implements SynchronizedEntity
         string $approvedAt = null,
         string $createdAt = 'now',
         int $membersCount = 0,
-        array $citizenProjects = []
+        array $citizenProjects = [],
+        array $referentTags = []
     ) {
         if ($approvedAt) {
             $approvedAt = new \DateTime($approvedAt);
@@ -145,6 +151,7 @@ class Committee extends BaseGroup implements SynchronizedEntity
         $this->createdAt = $createdAt;
         $this->updatedAt = $createdAt;
         $this->citizenProjectSupports = new ArrayCollection();
+        $this->referentTags = new ArrayCollection($referentTags);
 
         foreach ($citizenProjects as $citizenProject) {
             $this->addSupportOnCitizenProject($citizenProject);
@@ -367,5 +374,27 @@ class Committee extends BaseGroup implements SynchronizedEntity
     public function getReportType(): string
     {
         return ReportType::COMMITTEE;
+    }
+
+    public function getReferentTags(): Collection
+    {
+        return $this->referentTags;
+    }
+
+    public function addReferentTag(ReferentTag $referentTag): void
+    {
+        if (!$this->referentTags->contains($referentTag)) {
+            $this->referentTags->add($referentTag);
+        }
+    }
+
+    public function removeReferentTag(ReferentTag $referentTag): void
+    {
+        $this->referentTags->remove($referentTag);
+    }
+
+    public function removeReferentTags(): void
+    {
+        $this->referentTags = new ArrayCollection();
     }
 }

@@ -23,8 +23,6 @@ class CommitteeSerializationSubscriber implements EventSubscriberInterface
 
     public function onPostSerialize(ObjectEvent $event)
     {
-        $tag = ManagedAreaUtils::getCodeFromCommittee($event->getObject());
-
-        $event->getVisitor()->addData('tags', $tag ? [$tag] : []);
+        $event->getVisitor()->addData('tags', ManagedAreaUtils::getCodesFromCommittee($event->getObject()));
     }
 }

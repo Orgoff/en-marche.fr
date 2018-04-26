@@ -9,7 +9,14 @@ use AppBundle\Utils\AreaUtils;
 
 class ManagedAreaUtils extends AreaUtils
 {
-    public static function getCodeFromCommittee(Committee $committee): ?string
+    public static function getCodesFromCommittee(Committee $committee): array
+    {
+        $localCode = static::getLocalCodeFromCommittee($committee);
+
+        return array_merge([$localCode], static::getRelatedCodes($localCode));
+    }
+
+    public static function getLocalCodeFromCommittee(Committee $committee): string
     {
         if (self::CODE_FRANCE === $committee->getCountry()) {
             return static::getCodeFromPostalCode($committee->getPostalCode());

@@ -217,8 +217,8 @@ class AdherentRepository extends EntityRepository implements UserLoaderInterface
     {
         $qb = $this
             ->createReferentQueryBuilder()
-            ->andWhere('managed_area_tag.code = :code')
-            ->setParameter('code', ManagedAreaUtils::getCodeFromCommittee($committee))
+            ->andWhere('managed_area_tag.code IN (:codes)')
+            ->setParameter('codes', ManagedAreaUtils::getCodesFromCommittee($committee))
         ;
 
         return new AdherentCollection($qb->getQuery()->getResult());

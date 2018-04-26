@@ -132,6 +132,7 @@
         </service>
 
         <service id="app.committee.factory" class="AppBundle\Committee\CommitteeFactory">
+            <argument type="service" id="AppBundle\Referent\ReferentTagManager"/>
             <argument type="service" id="app.address.post_address_factory"/>
         </service>
 

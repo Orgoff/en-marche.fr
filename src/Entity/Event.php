@@ -59,6 +59,11 @@ class Event extends BaseEvent implements UserDocumentInterface, SynchronizedEnti
      */
     protected $documents;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ReferentTag")
+     */
+    private $referentTags;
+
     public function __construct(
         UuidInterface $uuid,
         ?Adherent $organizer,
@@ -74,7 +79,8 @@ class Event extends BaseEvent implements UserDocumentInterface, SynchronizedEnti
         string $createdAt = null,
         int $participantsCount = 0,
         string $slug = null,
-        string $type = null
+        string $type = null,
+        array $referentTags = []
     ) {
         $this->uuid = $uuid;
         $this->organizer = $organizer;
@@ -94,6 +100,7 @@ class Event extends BaseEvent implements UserDocumentInterface, SynchronizedEnti
         $this->isForLegislatives = $isForLegislatives;
         $this->type = $type;
         $this->documents = new ArrayCollection();
+        $this->referentTags = new ArrayCollection($referentTags);
     }
 
     public function __toString(): string
@@ -147,6 +154,28 @@ class Event extends BaseEvent implements UserDocumentInterface, SynchronizedEnti
     public function getReportType(): string
     {
         return ReportType::COMMUNITY_EVENT;
+    }
+
+    public function getReferentTags(): Collection
+    {
+        return $this->referentTags;
+    }
+
+    public function addReferentTag(ReferentTag $referentTag): void
+    {
+        if (!$this->referentTags->contains($referentTag)) {
+            $this->referentTags->add($referentTag);
+        }
+    }
+
+    public function removeReferentTag(ReferentTag $referentTag): void
+    {
+        $this->referentTags->remove($referentTag);
+    }
+
+    public function removeReferentTags(): void
+    {
+        $this->referentTags = new ArrayCollection();
     }
 
     /**
