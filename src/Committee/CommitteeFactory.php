@@ -93,8 +93,6 @@ class CommitteeFactory
             $committee->setGooglePlusPageUrl($command->googlePlusPageUrl);
         }
 
-        $this->referentTagManager->assignCommitteeLocalTag($committee);
-
         return $committee;
     }
 

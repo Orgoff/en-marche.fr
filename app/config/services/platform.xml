@@ -141,6 +141,7 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.address.post_address_factory"/>
             <argument type="service" id="app.committee.photo.manager"/>
+            <argument type="service" id="AppBundle\Referent\ReferentTagManager"/>
         </service>
 
         <service id="app.committee.creation_handler" class="AppBundle\Committee\CommitteeCreationCommandHandler">
@@ -149,6 +150,7 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.mailer.transactional"/>
             <argument type="service" id="app.committee.photo.manager"/>
+            <argument type="service" id="AppBundle\Referent\ReferentTagManager"/>
         </service>
 
         <service id="app.committee.contact_members_handler" class="AppBundle\Committee\CommitteeContactMembersCommandHandler">
