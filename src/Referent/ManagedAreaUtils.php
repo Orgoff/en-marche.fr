@@ -25,7 +25,14 @@ class ManagedAreaUtils extends AreaUtils
         return static::getCodeFromCountry($committee->getCountry());
     }
 
-    public static function getCodeFromEvent(Event $event): ?string
+    public static function getCodesFromEvent(Event $event): array
+    {
+        $localCode = static::getLocalCodeFromEvent($event);
+
+        return array_merge([$localCode], static::getRelatedCodes($event));
+    }
+
+    public static function getLocalCodeFromEvent(Event $event): string
     {
         if (self::CODE_FRANCE === $event->getCountry()) {
             return static::getCodeFromPostalCode($event->getPostalCode());

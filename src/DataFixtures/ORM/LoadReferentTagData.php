@@ -31,7 +31,7 @@ class LoadReferentTagData extends Fixture
                         $this->createReferentTag($manager, "750$district", "750$district");
                     }
 
-                    $this->createReferentTag($manager, "Paris", "75");
+                    $this->createReferentTag($manager, 'Paris', '75');
 
                     break;
                 // does not exist

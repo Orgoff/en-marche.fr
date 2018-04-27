@@ -4,6 +4,7 @@ namespace AppBundle\Referent;
 
 use AppBundle\Entity\Adherent;
 use AppBundle\Entity\Committee;
+use AppBundle\Entity\Event;
 use AppBundle\Repository\ReferentTagRepository;
 
 class ReferentTagManager
@@ -42,6 +43,21 @@ class ReferentTagManager
 
         foreach ($this->referentTagRepository->findByCodes($codes) as $referentTag) {
             $committee->addReferentTag($referentTag);
+        }
+    }
+
+    public function assignEventLocalTag(Event $event): void
+    {
+        $event->removeReferentTags();
+
+        $codes = ManagedAreaUtils::getCodesFromEvent($event);
+
+        if (empty($codes)) {
+            return;
+        }
+
+        foreach ($this->referentTagRepository->findByCodes($codes) as $referentTag) {
+            $event->addReferentTag($referentTag);
         }
     }
 }

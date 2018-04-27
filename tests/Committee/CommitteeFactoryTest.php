@@ -48,7 +48,7 @@ class CommitteeFactoryTest extends TestCase
 
         $referentTagManager = $this->createMock(ReferentTagManager::class);
         $referentTagManager
-            ->expects(self::once())
+            ->expects(self::never())
             ->method('assignCommitteeLocalTag')
         ;
 

@@ -225,7 +225,9 @@
         </service>
 
         <!-- Events -->
-        <service id="app.event.factory" class="AppBundle\Event\EventFactory"/>
+        <service id="app.event.factory" class="AppBundle\Event\EventFactory">
+            <argument type="service" id="AppBundle\Referent\ReferentTagManager"/>
+        </service>
 
         <service id="app.event.registration_factory" class="AppBundle\Event\EventRegistrationFactory"/>
 

@@ -13,6 +13,7 @@ class EventCommandHandler
     private $dispatcher;
     private $factory;
     private $manager;
+    private $referentTagManager;
 
     public function __construct(
         EventDispatcherInterface $dispatcher,

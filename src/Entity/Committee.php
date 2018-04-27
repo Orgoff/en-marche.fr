@@ -9,6 +9,7 @@ use AppBundle\ValueObject\Link;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use libphonenumber\PhoneNumber;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -405,7 +406,7 @@ class Committee extends BaseGroup implements SynchronizedEntity
      */
     public function getReferentTagsCodes(): array
     {
-        return array_map(function(ReferentTag $referentTag) {
+        return array_map(function (ReferentTag $referentTag) {
             return $referentTag->getCode();
         }, $this->referentTags->toArray());
     }

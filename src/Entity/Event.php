@@ -213,7 +213,7 @@ class Event extends BaseEvent implements UserDocumentInterface, SynchronizedEnti
      */
     public function getReferentTagsCodes(): array
     {
-        return array_map(function(ReferentTag $referentTag) {
+        return array_map(function (ReferentTag $referentTag) {
             return $referentTag->getCode();
         }, $this->referentTags->toArray());
     }
