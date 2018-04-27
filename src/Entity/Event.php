@@ -205,4 +205,16 @@ class Event extends BaseEvent implements UserDocumentInterface, SynchronizedEnti
 
         return $category->getName();
     }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("tags")
+     * @JMS\Groups({"public", "event_read"})
+     */
+    public function getReferentTagsCodes(): array
+    {
+        return array_map(function(ReferentTag $referentTag) {
+            return $referentTag->getCode();
+        }, $this->referentTags->toArray());
+    }
 }

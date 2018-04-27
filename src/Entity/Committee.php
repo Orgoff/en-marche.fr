@@ -397,4 +397,16 @@ class Committee extends BaseGroup implements SynchronizedEntity
     {
         $this->referentTags = new ArrayCollection();
     }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("tags")
+     * @JMS\Groups({"public", "committee_read"})
+     */
+    public function getReferentTagsCodes(): array
+    {
+        return array_map(function(ReferentTag $referentTag) {
+            return $referentTag->getCode();
+        }, $this->referentTags->toArray());
+    }
 }
