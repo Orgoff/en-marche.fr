@@ -12,7 +12,6 @@ use AppBundle\Entity\CitizenProject;
 use AppBundle\Entity\Committee;
 use AppBundle\Geocoder\Coordinates;
 use AppBundle\Membership\AdherentEmailSubscription;
-use AppBundle\Referent\ManagedAreaUtils;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;

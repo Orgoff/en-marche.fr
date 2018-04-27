@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller\EnMarche;
 
+use AppBundle\Entity\Adherent;
+use AppBundle\Entity\Committee;
 use AppBundle\Exception\SitemapException;
 use AppBundle\Form\NewsletterSubscriptionType;
 use AppBundle\Sitemap\SitemapFactory;
