@@ -57,6 +57,7 @@ class DonationTest extends TestCase
         $donation = new Donation(
             Uuid::uuid4(),
             '10',
+            '10',
             'male',
             'jean',
             'dupont',

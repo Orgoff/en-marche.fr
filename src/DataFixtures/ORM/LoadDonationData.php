@@ -5,12 +5,20 @@ namespace AppBundle\DataFixtures\ORM;
 use AppBundle\Donation\PayboxPaymentSubscription;
 use AppBundle\Entity\Adherent;
 use AppBundle\Entity\Donation;
+use Cocur\Slugify\Slugify;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Ramsey\Uuid\Uuid;
 
 class LoadDonationData extends Fixture
 {
+    private $slugify;
+
+    public function __construct()
+    {
+        $this->slugify = Slugify::create();
+    }
+
     public function load(ObjectManager $manager)
     {
         /** @var Adherent $adherent1 */
@@ -51,7 +59,8 @@ class LoadDonationData extends Fixture
     public function create(Adherent $adherent, float $amount = 50.0, int $duration = PayboxPaymentSubscription::NONE): Donation
     {
         $donation = new Donation(
-            Uuid::uuid4(),
+            $uuid = Uuid::uuid4(),
+            $uuid->toString().'_'.$this->slugify->slugify($adherent->getFullName()),
             $amount * 100,
             $adherent->getGender(),
             $adherent->getFirstName(),
@@ -63,9 +72,13 @@ class LoadDonationData extends Fixture
             $duration
         );
 
-        $donation->finish([
+        $donation->processPayload([
             'result' => '00000',
             'authorization' => 'test',
+            'subscription' => $duration ? Uuid::uuid1()->toString() : null,
+            'transaction' => Uuid::uuid4()->toString(),
+            'date' => '02022018',
+            'time' => '15:22:33',
         ]);
 
         return $donation;
@@ -73,10 +86,10 @@ class LoadDonationData extends Fixture
 
     public function setDonateAt(Donation $donation, string $modifier): void
     {
-        $reflectDonation = new \ReflectionObject($donation);
-        $reflectDonationAt = $reflectDonation->getProperty('donatedAt');
+        $reflectDonation = new \ReflectionObject($transaction = $donation->getTransactions()->first());
+        $reflectDonationAt = $reflectDonation->getProperty('payboxDateTime');
         $reflectDonationAt->setAccessible(true);
-        $reflectDonationAt->setValue($donation, new \DateTime($modifier));
+        $reflectDonationAt->setValue($transaction, new \DateTime($modifier));
         $reflectDonationAt->setAccessible(false);
     }
 

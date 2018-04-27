@@ -63,6 +63,31 @@
             <argument type="service" id="app.donation_request.utils.locator" key="$locator" />
         </service>
 
+        <service id="app.donation_request.utils.locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
+            <argument type="collection">
+                <argument key="validator" type="service" id="validator" />
+                <argument key="session" type="service" id="session" />
+                <argument key="security.csrf.token_manager" type="service" id="security.csrf.token_manager" />
+            </argument>
+            <tag name="container.service_locator" />
+        </service>
+
+        <service class="AppBundle\Donation\DonationRequestHandler"/>
+
+        <service class="AppBundle\Donation\PayboxFormFactory">
+            <argument>%kernel.environment%</argument>
+        </service>
+
+        <service id="app.donation.transaction_listener" class="AppBundle\Donation\TransactionListener">
+            <argument key="$mailer" type="service" id="app.mailer.transactional" />
+
+            <tag name="kernel.event_listener" event="paybox.ipn_response" method="onPayboxIpnResponse" />
+        </service>
+
+        <service class="AppBundle\Donation\TransactionCallbackHandler">
+            <argument key="$mailer" type="service" id="app.mailer.transactional" />
+        </service>
+
         <!-- Event -->
         <service id="AppBundle\Event\EventRegistrationSubscriber" >
             <argument type="service" id="app.mailer.transactional" />

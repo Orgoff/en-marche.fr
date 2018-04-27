@@ -5,6 +5,7 @@ namespace AppBundle\Donation;
 use AppBundle\Entity\Donation;
 use AppBundle\Mailer\MailerService;
 use AppBundle\Mailer\Message\DonationMessage;
+use AppBundle\Repository\TransactionRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,13 +18,18 @@ class TransactionCallbackHandler
     private $entityManager;
     private $mailer;
     private $donationRequestUtils;
+    /**
+     * @var TransactionRepository
+     */
+    private $transactionRepository;
 
-    public function __construct(UrlGeneratorInterface $router, ObjectManager $entityManager, MailerService $mailer, DonationRequestUtils $donationRequestUtils)
+    public function __construct(UrlGeneratorInterface $router, ObjectManager $entityManager, MailerService $mailer, DonationRequestUtils $donationRequestUtils, TransactionRepository $transactionRepository)
     {
         $this->router = $router;
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
         $this->donationRequestUtils = $donationRequestUtils;
+        $this->transactionRepository = $transactionRepository;
     }
 
     public function handle(string $uuid, Request $request, string $callbackToken): Response
@@ -34,20 +40,22 @@ class TransactionCallbackHandler
             return new RedirectResponse($this->router->generate('donation_index'));
         }
 
-        if (!$donation->isFinished()) {
-            $donation->finish($this->donationRequestUtils->extractPayboxResultFromCallBack($request, $callbackToken));
+        $payload = $this->donationRequestUtils->extractPayboxResultFromCallBack($request, $callbackToken);
+
+        if (!$transaction = $this->transactionRepository->findByPayboxTransactionId($payload['transaction'])) {
+            $transaction = $donation->processPayload($payload);
 
             $this->entityManager->flush();
 
             $campaignExpired = (bool) $request->attributes->get('_campaign_expired', false);
-            if (!$campaignExpired && $donation->isSuccessful()) {
-                $this->mailer->sendMessage(DonationMessage::createFromDonation($donation));
+            if (!$campaignExpired && $transaction->isSuccess()) {
+                $this->mailer->sendMessage(DonationMessage::createFromDonation($transaction));
             }
         }
 
         return new RedirectResponse($this->router->generate(
             'donation_result',
-            $this->donationRequestUtils->createCallbackStatus($donation)
+            $this->donationRequestUtils->createCallbackStatus($transaction)
         ));
     }
 }

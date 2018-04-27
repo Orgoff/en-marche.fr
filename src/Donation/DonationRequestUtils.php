@@ -4,12 +4,14 @@ namespace AppBundle\Donation;
 
 use AppBundle\Entity\Adherent;
 use AppBundle\Entity\Donation;
+use AppBundle\Entity\Transaction;
 use AppBundle\Exception\InvalidDonationCallbackException;
 use AppBundle\Exception\InvalidDonationPayloadException;
 use AppBundle\Exception\InvalidDonationStatusException;
 use Cocur\Slugify\Slugify;
 use AppBundle\Exception\InvalidPayboxPaymentSubscriptionValueException;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -127,28 +129,25 @@ class DonationRequestUtils
         ];
     }
 
-    public function createCallbackStatus(Donation $donation): array
+    public function createCallbackStatus(Transaction $transaction): array
     {
-        $code = self::PAYBOX_STATUSES[$donation->getPayboxResultCode()] ?? self::PAYBOX_STATUSES[self::PAYBOX_UNKNOWN];
+        $code = self::PAYBOX_STATUSES[$transaction->getPayboxResultCode()] ?? self::PAYBOX_STATUSES[self::PAYBOX_UNKNOWN];
 
         return [
             'code' => $code,
-            'uuid' => $donation->getUuid()->toString(),
+            'uuid' => $transaction->getDonation()->getUuid()->toString(),
             'status' => self::PAYBOX_SUCCESS === $code ? 'effectue' : 'erreur',
             '_status_token' => (string) $this->getTokenManager()->getToken(self::STATUS_TOKEN),
         ];
     }
 
-    public function buildDonationReference(Donation $donation, bool $withSuffix = true): string
+    public function buildDonationReference(UuidInterface $uuid, string $fullName): string
     {
         $str = sprintf(
             '%s_%s',
-            $donation->getUuid()->toString(),
-            $this->slugify->slugify($donation->getFullName())
+            $uuid,
+            $this->slugify->slugify($fullName)
         );
-        if ($withSuffix) {
-            $str .= PayboxPaymentSubscription::getCommandSuffix($donation->getAmount(), $donation->getDuration());
-        }
 
         return $str;
     }
@@ -162,7 +161,7 @@ class DonationRequestUtils
         }
 
         $data = array_filter($data);
-        if (!is_array($data) || !$data) {
+        if (!\is_array($data) || !$data) {
             return $request;
         }
 
@@ -198,7 +197,7 @@ class DonationRequestUtils
     {
         if ($this->getTokenManager()->isTokenValid(new CsrfToken(self::RETRY_TOKEN, $token))
         ) {
-            return 0 === count($this->getValidator()->validate($retry));
+            return 0 === \count($this->getValidator()->validate($retry));
         }
 
         throw new InvalidDonationPayloadException();
@@ -206,7 +205,7 @@ class DonationRequestUtils
 
     private function isValidStatus(string $status)
     {
-        return in_array($status, self::PAYBOX_STATUSES, true);
+        return \in_array($status, self::PAYBOX_STATUSES, true);
     }
 
     private function getValidator(): ValidatorInterface

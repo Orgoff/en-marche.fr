@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Donation\DonationStatusEnum;
 use AppBundle\Donation\PayboxPaymentSubscription;
 use AppBundle\Entity\Donation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -26,14 +27,6 @@ class DonationRepository extends ServiceEntityRepository
         return $this->findOneByValidUuid($uuid);
     }
 
-    public function findByEmailAddressOrderedByDonatedAt(string $email, string $order = 'ASC'): array
-    {
-        return $this->findBy(
-            ['emailAddress' => $email],
-            ['donatedAt' => $order]
-        );
-    }
-
     /**
      * @return Donation[]
      */
@@ -42,12 +35,14 @@ class DonationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('donation')
             ->andWhere('donation.emailAddress = :email')
             ->andWhere('donation.duration != :duration')
+            ->andWhere('donation.status = :status')
             ->andWhere('donation.subscriptionEndedAt IS NULL')
             ->setParameters([
+                'status' => DonationStatusEnum::SUBSCRIPTION_IN_PROGRESS,
                 'email' => $email,
                 'duration' => PayboxPaymentSubscription::NONE,
             ])
-            ->orderBy('donation.donatedAt', 'ASC')
+            ->orderBy('donation.createdAt', 'ASC')
             ->getQuery()
             ->getResult()
         ;

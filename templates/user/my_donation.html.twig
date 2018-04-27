@@ -13,10 +13,10 @@
 {% block adherent_profile_form %}
     <h2>Mes dons</h2>
 
-    {% if donations %}
+    {% if transactions_success %}
         <div class="b__nudge--top b__nudge--bottom">
             Merci pour votre engagement à nos côtés ! <br/>
-            Votre dernier don a été fait {{ donations|first.donatedAt|ago }}.
+            Votre dernier don a été fait {{ transactions_success|first.payboxDateTime|ago }}.
             {% if subscribed_donations %}
                 <a href="{{ path('donation_subscription_cancel') }}">
                     {{ 'adherent.stop_donation'|transchoice(subscribed_donations|length) }}
@@ -54,10 +54,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for donation in donations %}
+                {% for transaction in transactions_success %}
+                    {% set donation = transaction.donation %}
                     <tr>
                         <td>
-                            {{ donation.donatedAt|date('d M Y') }}
+                            {{ transaction.payboxDateTime|date('d M Y') }}
                         </td>
                         <td>
                             {{ donation.amountInEuros }} €

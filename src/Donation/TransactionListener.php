@@ -9,7 +9,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Lexik\Bundle\PayboxBundle\Event\PayboxResponseEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class TransactionSuccessListener
+class TransactionListener
 {
     private $manager;
     private $mailer;
@@ -27,7 +27,7 @@ class TransactionSuccessListener
      *
      * @param PayboxResponseEvent $event
      */
-    public function onPayboxIpnResponse(PayboxResponseEvent $event)
+    public function onPayboxIpnResponse(PayboxResponseEvent $event): void
     {
         if (!$event->isVerified()) {
             return;
@@ -35,7 +35,7 @@ class TransactionSuccessListener
 
         $payboxPayload = $event->getData();
 
-        if (!isset($payboxPayload['id'], $payboxPayload['authorization'], $payboxPayload['result'])) {
+        if (!isset($payboxPayload['id'])) {
             return;
         }
 
@@ -46,14 +46,14 @@ class TransactionSuccessListener
             return;
         }
 
-        $donation->finish($payboxPayload);
+        $transaction = $donation->processPayload($payboxPayload);
 
         $this->manager->persist($donation);
         $this->manager->flush();
 
         $campaignExpired = (bool) $this->requestStack->getCurrentRequest()->attributes->get('_campaign_expired', false);
-        if (!$campaignExpired && $donation->isSuccessful()) {
-            $this->mailer->sendMessage(DonationMessage::createFromDonation($donation));
+        if (!$campaignExpired && $transaction->isSuccess()) {
+            $this->mailer->sendMessage(DonationMessage::createFromDonation($transaction));
         }
     }
 }
