@@ -52,7 +52,7 @@ class CommitteeUpdateCommandHandler
             $command->googlePlusPageUrl
         );
 
-        $this->referentTagManager->assignCommitteeLocalTag($committee);
+        $this->referentTagManager->assignReferentLocalTags($committee);
 
         $this->manager->persist($committee);
         $this->manager->flush();

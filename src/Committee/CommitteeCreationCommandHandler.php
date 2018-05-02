@@ -41,7 +41,7 @@ class CommitteeCreationCommandHandler
         // Uploads an ID photo
         $this->photoManager->addPhotoFromCommand($command, $committee);
 
-        $this->referentTagManager->assignCommitteeLocalTag($committee);
+        $this->referentTagManager->assignReferentLocalTags($committee);
 
         $command->setCommittee($committee);
 

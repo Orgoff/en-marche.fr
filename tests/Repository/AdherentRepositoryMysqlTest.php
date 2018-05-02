@@ -33,7 +33,7 @@ class AdherentRepositoryMysqlTest extends MysqlWebTestCase
     public function testFindReferentsByCommittee()
     {
         $committeeTags = new ArrayCollection([
-            $this->referentTagRepository->findOneByCode('CH')
+            $this->referentTagRepository->findOneByCode('CH'),
         ]);
 
         // Foreign Committee with Referent
@@ -52,7 +52,7 @@ class AdherentRepositoryMysqlTest extends MysqlWebTestCase
 
         // Committee with no Referent
         $committeeTags = new ArrayCollection([
-            $this->referentTagRepository->findOneByCode('44')
+            $this->referentTagRepository->findOneByCode('44'),
         ]);
 
         $committee = $this->createMock(Committee::class);
@@ -64,7 +64,7 @@ class AdherentRepositoryMysqlTest extends MysqlWebTestCase
 
         // Departemental Commitee with Referent
         $committeeTags = new ArrayCollection([
-            $this->referentTagRepository->findOneByCode('77')
+            $this->referentTagRepository->findOneByCode('77'),
         ]);
 
         $committee = $this->createMock(Committee::class);

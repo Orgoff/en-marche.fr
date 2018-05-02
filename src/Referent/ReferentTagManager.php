@@ -2,9 +2,7 @@
 
 namespace AppBundle\Referent;
 
-use AppBundle\Entity\Adherent;
-use AppBundle\Entity\Committee;
-use AppBundle\Entity\Event;
+use AppBundle\Entity\ReferentTaggableEntity;
 use AppBundle\Repository\ReferentTagRepository;
 
 class ReferentTagManager
@@ -16,48 +14,16 @@ class ReferentTagManager
         $this->referentTagRepository = $referentTagRepository;
     }
 
-    public function assignAdherentLocalTag(Adherent $adherent): void
+    public function assignReferentLocalTags(ReferentTaggableEntity $entity): void
     {
-        $adherent->removeReferentTags();
+        $entity->removeReferentTags();
 
-        $codes = ManagedAreaUtils::getCodesFromAdherent($adherent);
-
-        if (empty($codes)) {
+        if (empty($codes = ManagedAreaUtils::getLocalCodes($entity))) {
             return;
         }
 
         foreach ($this->referentTagRepository->findByCodes($codes) as $referentTag) {
-            $adherent->addReferentTag($referentTag);
-        }
-    }
-
-    public function assignCommitteeLocalTag(Committee $committee): void
-    {
-        $committee->removeReferentTags();
-
-        $codes = ManagedAreaUtils::getCodesFromCommittee($committee);
-
-        if (empty($codes)) {
-            return;
-        }
-
-        foreach ($this->referentTagRepository->findByCodes($codes) as $referentTag) {
-            $committee->addReferentTag($referentTag);
-        }
-    }
-
-    public function assignEventLocalTag(Event $event): void
-    {
-        $event->removeReferentTags();
-
-        $codes = ManagedAreaUtils::getCodesFromEvent($event);
-
-        if (empty($codes)) {
-            return;
-        }
-
-        foreach ($this->referentTagRepository->findByCodes($codes) as $referentTag) {
-            $event->addReferentTag($referentTag);
+            $entity->addReferentTag($referentTag);
         }
     }
 }

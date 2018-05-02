@@ -59,7 +59,7 @@ class CommitteeFactory
             $committee->updateSlug($data['slug']);
         }
 
-        $this->referentTagManager->assignCommitteeLocalTag($committee);
+        $this->referentTagManager->assignReferentLocalTags($committee);
 
         return $committee;
     }

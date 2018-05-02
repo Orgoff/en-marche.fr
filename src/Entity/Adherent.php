@@ -37,7 +37,7 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @Algolia\Index(autoIndex=false)
  */
-class Adherent implements UserInterface, GeoPointInterface, EncoderAwareInterface, MembershipInterface, \Serializable
+class Adherent implements UserInterface, GeoPointInterface, EncoderAwareInterface, MembershipInterface, ReferentTaggableEntity, \Serializable
 {
     public const ENABLED = 'ENABLED';
     public const DISABLED = 'DISABLED';

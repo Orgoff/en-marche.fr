@@ -49,7 +49,7 @@ class ReferentTagInitializeCommand extends Command
         foreach ($this->getIterator() as $result) {
             $adherent = reset($result);
 
-            $this->tagManager->assignAdherentLocalTag($adherent);
+            $this->tagManager->assignReferentLocalTags($adherent);
 
             $progressBar->advance();
 

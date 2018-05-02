@@ -32,7 +32,7 @@ use Ramsey\Uuid\UuidInterface;
  *
  * @Algolia\Index(autoIndex=false)
  */
-class Committee extends BaseGroup implements SynchronizedEntity
+class Committee extends BaseGroup implements SynchronizedEntity, ReferentTaggableEntity
 {
     use EntityPostAddressTrait;
     use CoordinatorAreaTrait;

@@ -48,7 +48,7 @@ class EventFactory
             $data['is_for_legislatives'] ?? false
         );
 
-        $this->referentTagManager->assignEventLocalTag($event);
+        $this->referentTagManager->assignReferentLocalTags($event);
 
         return $event;
     }
@@ -92,7 +92,7 @@ class EventFactory
             $command->isForLegislatives()
         );
 
-        $this->referentTagManager->assignEventLocalTag($event);
+        $this->referentTagManager->assignReferentLocalTags($event);
 
         return $event;
     }
@@ -110,7 +110,7 @@ class EventFactory
             $command->isForLegislatives()
         );
 
-        $this->referentTagManager->assignEventLocalTag($event);
+        $this->referentTagManager->assignReferentLocalTags($event);
 
         return $event;
     }

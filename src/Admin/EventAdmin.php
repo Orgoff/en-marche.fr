@@ -125,7 +125,7 @@ class EventAdmin extends AbstractAdmin
 
     public function postUpdate($object)
     {
-        $this->referentTagManager->assignEventLocalTag($object);
+        $this->referentTagManager->assignReferentLocalTags($object);
 
         $event = new EventEvent($object->getOrganizer(), $object);
 

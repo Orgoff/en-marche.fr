@@ -2,58 +2,24 @@
 
 namespace AppBundle\Referent;
 
-use AppBundle\Entity\Adherent;
-use AppBundle\Entity\Committee;
-use AppBundle\Entity\Event;
+use AppBundle\Entity\EntityPostAddressInterface;
 use AppBundle\Utils\AreaUtils;
 
 class ManagedAreaUtils extends AreaUtils
 {
-    public static function getCodesFromCommittee(Committee $committee): array
+    public static function getLocalCodes(EntityPostAddressInterface $entity): array
     {
-        $localCode = static::getLocalCodeFromCommittee($committee);
+        $localCode = static::getLocalCode($entity);
 
         return array_merge([$localCode], static::getRelatedCodes($localCode));
     }
 
-    public static function getLocalCodeFromCommittee(Committee $committee): string
+    public static function getLocalCode(EntityPostAddressInterface $entity): string
     {
-        if (self::CODE_FRANCE === $committee->getCountry()) {
-            return static::getCodeFromPostalCode($committee->getPostalCode());
+        if (self::CODE_FRANCE === $entity->getCountry()) {
+            return static::getCodeFromPostalCode($entity->getPostalCode());
         }
 
-        return static::getCodeFromCountry($committee->getCountry());
-    }
-
-    public static function getCodesFromEvent(Event $event): array
-    {
-        $localCode = static::getLocalCodeFromEvent($event);
-
-        return array_merge([$localCode], static::getRelatedCodes($event));
-    }
-
-    public static function getLocalCodeFromEvent(Event $event): string
-    {
-        if (self::CODE_FRANCE === $event->getCountry()) {
-            return static::getCodeFromPostalCode($event->getPostalCode());
-        }
-
-        return static::getCodeFromCountry($event->getCountry());
-    }
-
-    public static function getCodesFromAdherent(Adherent $adherent): array
-    {
-        $localCode = static::getLocalCodeFromAdherent($adherent);
-
-        return array_merge([$localCode], static::getRelatedCodes($localCode));
-    }
-
-    private static function getLocalCodeFromAdherent(Adherent $adherent): string
-    {
-        if (self::CODE_FRANCE === $adherent->getCountry()) {
-            return static::getCodeFromPostalCode($adherent->getPostalCode());
-        }
-
-        return static::getCodeFromCountry($adherent->getCountry());
+        return static::getCodeFromCountry($entity->getCountry());
     }
 }
