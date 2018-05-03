@@ -6,6 +6,8 @@ use AppBundle\Donation\DonationRequest;
 use AppBundle\Donation\DonationRequestUtils;
 use AppBundle\Entity\Adherent;
 use AppBundle\Form\DataTransformer\FloatToStringTransformer;
+use AppBundle\Membership\MembershipUtils;
+use Doctrine\ORM\EntityManagerInterface;
 use Misd\PhoneNumberBundle\Form\Type\PhoneNumberType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -23,15 +25,33 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class DonationRequestType extends AbstractType
 {
+    /** @var DonationRequestUtils */
     private $donationRequestUtils;
+
+    /** @var MembershipUtils */
+    private $membershipUtils;
+
+    /** @var TokenStorageInterface */
     private $tokenStorage;
+
+    /** @var RequestStack */
     private $requestStack;
 
-    public function __construct(DonationRequestUtils $donationRequestUtils, RequestStack $requestStack, TokenStorageInterface $tokenStorage)
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
+    public function __construct(
+        DonationRequestUtils $donationRequestUtils,
+        MembershipUtils $membershipUtils,
+        RequestStack $requestStack,
+        TokenStorageInterface $tokenStorage,
+        EntityManagerInterface $entityManager)
     {
+        $this->membershipUtils = $membershipUtils;
         $this->donationRequestUtils = $donationRequestUtils;
-        $this->tokenStorage = $tokenStorage;
         $this->requestStack = $requestStack;
+        $this->tokenStorage = $tokenStorage;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -91,6 +111,11 @@ class DonationRequestType extends AbstractType
     {
         if (!$formEvent->getData()) {
             $user = $this->tokenStorage->getToken()->getUser();
+
+            // The user come from the registration process
+            if ($uuid = $this->membershipUtils->getSessionNewAdherentUuid()) {
+                $user = $this->entityManager->getRepository(Adherent::class)->findByUuid($uuid);
+            }
 
             if (!$user instanceof Adherent) {
                 $user = null;

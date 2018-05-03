@@ -186,7 +186,7 @@ class CommitteeManager
     public function getNearbyCommittees(Coordinates $coordinates, $limit = self::COMMITTEE_PROPOSALS_COUNT): array
     {
         $data = [];
-        $committees = $this->getCommitteeRepository()->findNearbyCommittees($limit, $coordinates);
+        $committees = $this->getCommitteeRepository()->findNearbyCommittees($coordinates, $limit);
 
         foreach ($committees as $committee) {
             $data[(string) $committee->getUuid()] = $committee;
@@ -478,5 +478,34 @@ class CommitteeManager
     public function getCommitteeSupervisor(Committee $committee): ?Adherent
     {
         return $this->getMembershipRepository()->findSupervisor($committee->getUuid()->toString());
+    }
+
+    /**
+     * Returns a list of committees and the number of members that are located near coordinates.
+     *
+     * @param Coordinates $coordinates
+     * @param int         $count
+     *
+     * @return array
+     */
+    public function getCommitteesAndMembersNearByCoordinates(
+        ?Coordinates $coordinates,
+        int $count = self::COMMITTEE_PROPOSALS_COUNT): array
+    {
+        /** @var Committee[] $committees */
+        $committees = null !== $coordinates ?
+            $this->getCommitteeRepository()->findNearbyCommittees($coordinates, $count) :
+            $this->getCommitteeRepository()->findLastApprovedCommittees($count)
+        ;
+
+        foreach ($committees as $committee) {
+            $uuid = (string) $committee->getUuid();
+            $data[$uuid] = [
+                'committee' => $committee,
+                'members_count' => $this->getMembershipRepository()->countMembersByCommittee($uuid),
+            ];
+        }
+
+        return $data ?? [];
     }
 }

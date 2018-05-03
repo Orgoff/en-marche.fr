@@ -7,6 +7,7 @@ use AppBundle\Entity\Donation;
 use AppBundle\Exception\InvalidDonationCallbackException;
 use AppBundle\Exception\InvalidDonationPayloadException;
 use AppBundle\Exception\InvalidDonationStatusException;
+use AppBundle\Membership\MembershipUtils;
 use Cocur\Slugify\Slugify;
 use AppBundle\Exception\InvalidPayboxPaymentSubscriptionValueException;
 use Ramsey\Uuid\Uuid;
@@ -47,10 +48,14 @@ class DonationRequestUtils
     private $locator;
     private $slugify;
 
-    public function __construct(ServiceLocator $locator, Slugify $slugify)
+    /** @var MembershipUtils */
+    private $membershipUtils;
+
+    public function __construct(ServiceLocator $locator, Slugify $slugify, MembershipUtils $membershipUtils)
     {
         $this->locator = $locator;
         $this->slugify = $slugify;
+        $this->membershipUtils = $membershipUtils;
     }
 
     /**
@@ -118,6 +123,7 @@ class DonationRequestUtils
         return [
             'code' => $code,
             'uuid' => $donation->getUuid()->toString(),
+            'is_new_adherent' => $this->membershipUtils->hasSessionNewAdherentUuid(),
             'status' => self::PAYBOX_SUCCESS === $code ? 'effectue' : 'erreur',
             '_status_token' => (string) $this->getTokenManager()->getToken(self::STATUS_TOKEN),
         ];

@@ -33,4 +33,18 @@ class FeatureContext extends RawMinkContext
 
         $field->click();
     }
+
+    /**
+     * @Then /^(?:|I )should see "(?P<text>(?:[^"]|\\")*)" exactly (?P<count>\d+) times$/
+     */
+    public function iShouldSeeTextManyTimes(string $text, int $count)
+    {
+        $found = substr_count($this->getSession()->getPage()->getText(), $text);
+
+        if ($count !== $found) {
+            throw new \Exception(
+                sprintf('Found %s occurences of "%s" when expecting %s', $found, $text, $count)
+            );
+        }
+    }
 }

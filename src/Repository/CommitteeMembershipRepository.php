@@ -418,4 +418,24 @@ class CommitteeMembershipRepository extends EntityRepository
             return $uuid->toString();
         }, array_column($query->getArrayResult(), 'committeeUuid'));
     }
+
+    /**
+     * Returns the number of members for a given committee.
+     *
+     * @param string $committeeUuid
+     *
+     * @return int
+     */
+    public function countMembersByCommittee(string $committeeUuid): int
+    {
+        $query = $this
+            ->createQueryBuilder('committeeMembership')
+            ->select('COUNT(committeeMembership.uuid)')
+            ->where('committeeMembership.committeeUuid = :committee')
+            ->setParameter('committee', (string) Uuid::fromString($committeeUuid))
+            ->getQuery()
+        ;
+
+        return (int) $query->getSingleScalarResult();
+    }
 }

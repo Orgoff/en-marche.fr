@@ -252,4 +252,13 @@ class PostAddress implements AddressInterface, GeocodableInterface, GeoPointInte
     {
         return 'FR' === mb_strtoupper($this->country) && $this->city;
     }
+
+    public function getCoordinates(): ?Coordinates
+    {
+        if (null == $this->latitude && null == $this->longitude) {
+            return null;
+        }
+
+        return new Coordinates($this->latitude, $this->longitude);
+    }
 }

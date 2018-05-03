@@ -134,6 +134,7 @@ class DonationController extends Controller
             'error_code' => $request->query->get('code'),
             'donation' => $donation,
             'retry_url' => $retryUrl,
+            'is_new_adherent' => $request->query->get('is_new_adherent'),
         ]);
     }
 
